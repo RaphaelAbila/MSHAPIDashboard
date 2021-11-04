@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>Success Page</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body class="align">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: #f5f6f7;
+            color: #7e8ba3;
+            font: 300 1rem/1.5 Helvetica Neue, sans-serif;
+            margin: 0;
+            min-height: 100%;
+        }
+
+        .align {
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .align__item--start {
+            align-self: flex-start;
+        }
+
+        .align__item--end {
+            align-self: flex-end;
+        }
+
+
+
+        .grid {
+            margin: 0 auto;
+            max-width: 25rem;
+            width: 100%;
+        }
+
+        h2 {
+            font-size: 2.75rem;
+            font-weight: 100;
+            margin: 0 0 1rem;
+            text-transform: uppercase;
+        }
+
+        svg {
+            height: auto;
+            max-width: 100%;
+            vertical-align: middle;
+        }
+
+        a {
+            color: #7e8ba3;
+        }
+    </style>
+
+    <div class="grid align__item">
+
+        <div class="register">
+            <h3 style="color: seagreen;"><b>Registered Successfully</b></h3>
+
+            <p>Copy and Keep this API Key for future API Calls <a style="color: blue;" href="#">[[${apikey}]]</a></p>
+            <p>You will be notified upon activation.</p>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorator="layout">
+
+<head>
+    <title>End Points</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} " />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous" />
+</head>
+
+<body class="align">
+    <section layout:fragment="content">
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- <h2 style="color: black;" class="card-title">API Endpoint management</h2> -->
+                        <!-- <div class="row"> -->
+                        <div class="">
+                            <ul class="nav nav-tabs " id="myTabs">
+                                <li class="nav-item"><a href="#tab1" data-url="/tab1" class="nav-link active">Register
+                                        End
+                                        Points</a></li>
+                                <li class="nav-item"><a href="#tab2" data-url="/tab2" class="nav-link">Assign
+                                        Endpoint</a></li>
+                            </ul>
+
+                            <div class="tab-content pt-3">
+                                <div class="tab-pane active" id="tab1">
+                                    <div class="row">
+                                        <div class="col-md-10"></div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-primary" data-toggle="modal"
+                                                data-target="#exampleModal" data-whatever="@mdo"
+                                                style="padding: 6px; font-size: small;">Add EndPoint</button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <!-- register new end point -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 style="color: #007bff;" class="modal-title"
+                                                        id="exampleModalLabel">REGISTER ENDPOINT
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form th:action="@{/dash/registerendpoint}" method="post"
+                                                        class="form">
+                                                        <div class="form-group">
+                                                            <label for="recipient-name" class="col-form-label">Endpoint
+                                                                :</label>
+                                                            <input type="text" name="name" placeholder="GET ACCESS"
+                                                                class="form-control" required
+                                                                style="border: 1px solid #007bff; background-color: transparent;">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="message-text" class="col-form-label">Endpoint
+                                                                Url :</label>
+                                                            <input type="text" placeholder="api/dashboard/getaccess"
+                                                                name="url" class="form-control" required
+                                                                style="border: 1px solid #007bff;  background-color: transparent;" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="message-text" class="col-form-label">Description
+                                                                / Purpose
+                                                                :</label>
+                                                            <textarea class="form-control" id="message-text"
+                                                                name="details"
+                                                                style="border: 1px solid #007bff;  background-color: transparent;"></textarea>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Cancel</button>
+                                                            <input class="btn btn-primary" type="submit" value="Submit">
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- update api end point  -->
+                                    <div class="modal fade" id="updateendpoint" tabindex="-1" role="dialog"
+                                        aria-labelledby="updateendpointLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 style="color: #007bff;" class="modal-title"
+                                                        id="updateendpointLabel">UPDATE ENDPOINT
+                                                    </h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form th:action="@{/dash/updateendpoint}" method="post"
+                                                        class="form">
+                                                        <input type="hidden" class="form-control endpointidz"
+                                                            name="endpointid">
+                                                        <div class="form-group">
+                                                            <label for="recipient-name" class="col-form-label">Endpoint
+                                                                :</label>
+                                                            <input type="text" name="name"
+                                                                class="form-control updatename" required
+                                                                style="border: 1px solid #007bff; background-color: transparent;">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="message-text" class="col-form-label">Endpoint
+                                                                Url :</label>
+                                                            <input type="text" name="url" class="form-control updateurl"
+                                                                required
+                                                                style="border: 1px solid #007bff;  background-color: transparent;" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="message-text" class="col-form-label">Description
+                                                                /
+                                                                Purpose:</label>
+                                                            <textarea class="form-control updatedesc" id="message-text"
+                                                                name="details"
+                                                                style="border: 1px solid #007bff;  background-color: transparent;"></textarea>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-dismiss="modal">Cancel</button>
+                                                            <input class="btn btn-primary" type="submit" value="Submit">
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- tab 1 content  -->
+                                    <div class="row">
+                                        <div class="col-lg-12 grid-margin stretch-card">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover table-striped table-bordered"
+                                                    id="endpointz">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#No.</th>
+                                                            <th>End Point</th>
+                                                            <th>Url</th>
+                                                            <th class="center">Action</th>
+                                                            <th>Details</th>
+                                                            <th>Date Created</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="end, custStat: ${endpoints}">
+                                                            <td th:text="${custStat.count}"></td>
+                                                            <td style="color: blue;" th:text="${end.name}"></td>
+                                                            <td th:text="${end.url}"></td>
+                                                            <td>
+                                                                <a style="color: white;padding: 3px; font-size: small;"
+                                                                    th:data-parameter1="${end.name}"
+                                                                    th:data-parameter2="${end.url}"
+                                                                    th:data-parameter3="${end.details}"
+                                                                    th:data-parameter4="${end.endpointid}"
+                                                                    th:onclick="|updateEndpoint(this.getAttribute('data-parameter4'),this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'),this.getAttribute('data-parameter3'));|"
+                                                                    class="btn btn-primary">Update</a>
+
+                                                                <a th:href="@{/dash/deleteendpoint(endpointid=${end.endpointid})}"
+                                                                    class="btn btn-danger ml-2"
+                                                                    th:data-confirm-delete="|Are you sure you want to delete this Endpoint : ${end.name}?|"
+                                                                    onclick="if (!confirm(this.getAttribute('data-confirm-delete'))) return false"
+                                                                    style="padding: 3px; font-size: small;">Delete</a>
+                                                            </td>
+                                                            <td th:text="${end.details}"></td>
+                                                            <td th:text="${end.dateadded}"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- tab 2 content begins -->
+                                <div class="tab-pane" id="tab2">
+                                    <h2 style=" text-align: center; color: #007bff;" class="card-title">Active API users
+                                        with active keys</h2>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-lg-12 grid-margin stretch-card">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover table-striped table-bordered"
+                                                    id="endassignmentpointz">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>#No.</th>
+                                                            <th>Username</th>
+                                                            <th>Keyname</th>
+                                                            <th>End points</th>
+                                                            <th class="center">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr th:each="user, custStata: ${userendpoints}">
+                                                            <td th:text="${custStata.count}"></td>
+                                                            <td style="color: blue;" th:text="${user.username}">
+                                                            </td>
+                                                            <td th:text="${user.keyname}"></td>
+                                                            <!-- <td><label class="badge badge-success"  th:text="${user.endpoints}"></label></td> -->
+                                                            <td>
+                                                                <a style="color: white; padding: 3px; font-size: small; cursor: pointer;" 
+                                                                class="badge badge-success"  th:text="${user.endpoints}"
+                                                                th:data-parameter1="${user.apiuserid}"
+                                                                th:onclick="|fetchEndpoints(this.getAttribute('data-parameter1'));|"
+                                                                ></a>
+                                                            </td>
+                                                            <td>
+                                                                <a th:data-parameter1="${user.apiuserid}"
+                                                                    th:data-parameter2="${user.username}"
+                                                                    th:onclick="|manageEndpointUser(this.getAttribute('data-parameter1'),this.getAttribute('data-parameter2'));|"
+                                                                    class="btn btn-primary"
+                                                                    style="color: white; padding: 3px; font-size: small;">Manage</a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- assign end points  -->
+                                <div class="modal fade" id="assignment" tabindex="-1" role="dialog"
+                                    aria-labelledby="assignmentLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 style="color: #007bff;" class="modal-title" id="assignmentLabel">
+                                                    ASSIGN ENDPOINT TO USER
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" class="form-control apiuseridz" name="endpointid">
+                                                <div class="form-group">
+                                                    <label for="recipient-name" class="col-form-label">API User:
+                                                    </label>
+                                                    <input type="text" name="name" class="form-control apiusernemz"
+                                                        required
+                                                        style="border: 1px solid #007bff; background-color: transparent;">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="message-text" class="col-form-label">Endpoints
+                                                        :</label>
+                                                    <select class="form-control" id="select-endpoint" multiple>
+                                                        <option th:text="---Select---"></option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Cancel</button>
+                                                <a th:onclick="|submitEndpointsr();|" class="btn btn-primary"
+                                                    style="color: white; padding: 7px; font-size: small;">Submit</a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <!-- user endpoints -->
+                                <div class="modal fade" id="uuserends" tabindex="-1" role="dialog"
+                                    aria-labelledby="uuserendsLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 style="color: #007bff;" class="modal-title" id="uuserendsLabel">
+                                                     User End Points
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body" id="uuserendsbody">
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- </div> -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+        <script>
+            $(document).ready(function () {
+                $("#endpointz").DataTable({
+                    'aoColumnDefs': [{
+                        'bSortable': false,
+                        'aTargets': [-1] /* 1st one, start by the right */
+                    }],
+                    "lengthMenu": [4, 10, 15, 25]
+                });
+
+                $("#endassignmentpointz").DataTable({
+                    'aoColumnDefs': [{
+                        'bSortable': false,
+                        'aTargets': [-1] /* 1st one, start by the right */
+                    }],
+                    "lengthMenu": [4, 10, 15, 25]
+                });
+            })
+
+
+            $('#myTabs a').click(function (e) {
+                debugger
+                e.preventDefault();
+
+                var url = $(this).attr("data-url");
+                var href = this.hash;
+                var pane = $(this);
+
+                // ajax load from data-url
+                $(href).load(url, function (result) {
+                    pane.tab('show');
+                });
+            });
+
+            // load first tab content
+            $('#tab1').load($('.nav-link.active').attr("data-url"), function (result) {
+            });
+
+
+            $('#exampleModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget)
+                var recipient = button.data('whatever')
+                var modal = $(this)
+                modal.find('.modal-title').text('New message to ' + recipient)
+                modal.find('.modal-body input').val(recipient)
+            })
+
+            function updateEndpoint(endpointid, name, url, details) {
+                $('.updatename').val(name);
+                $('.updateurl').val(url);
+                $('.updatedesc').val(details);
+                $('.endpointidz').val(endpointid);
+                $('#updateendpoint').modal('show');
+            }
+
+            function manageEndpointUser(apiuseridz, apiusernemz) {
+                debugger
+                $('.apiuseridz').val(apiuseridz);
+                $('.apiusernemz').val(apiusernemz);
+
+                $.ajax({
+                    url: "/dash/getendpoints",
+                    type: "get",
+                    data: { apiuserid: apiuseridz },
+                    success: function (response) {
+                        debugger
+                        if (response !== null) {
+                            var data = response;
+                            $('#select-endpoint').html('');
+                            for (var i = 0; i <= data.length; i++) {
+                                $('#select-endpoint').append('<option value="' + data[i].endpointid + '\">' + data[i].name + '</option>');
+                            }
+                        }
+                        else {
+
+                        }
+                    }
+                });
+                $('#select-endpoint').select2();
+                $('.select2').css('width', '100%');
+                $('#assignment').modal('show');
+            }
+
+            function submitEndpointsr() {
+                var data = $('#select-endpoint').select2('data');
+                var apiuserid = $('.apiuseridz').val();
+                var jsonzData = [];
+                for (var i in data) {
+                    jsonzData.push({ endpointid: (data[i].id), name: data[i].text });
+                }
+                var data = {
+                    apiuserid: apiuserid,
+                    endpoints: JSON.stringify(jsonzData)
+                };
+
+                $.ajax({
+                    url: "/dash/submitendpoints",
+                    type: "get",
+                    data: data,
+                    success: function (response) {
+                        debugger
+                        if (response == 'success') {
+                            $('#assignment').modal('toggle');
+                            $('#endzz')[0].click();
+                            // $("#myTabs").tabs( "option", "active", 1 );
+
+                            var index = $('#myTabs a[href="#tab2"]').parent().index();
+                            $("#myTabs").tabs("option", "active", index);
+                        }
+                    }
+                });
+            }
+
+            function fetchEndpoints(apiuserid){
+                $.ajax({
+                    url: "/dash/getuserendpoints",
+                    type: "get",
+                    data: { apiuserid: apiuserid},
+                    success: function (response) {
+                      $('#uuserendsbody').html(response);
+                    }
+                });
+                $('#uuserends').modal('show');
+            }
+        </script>
+    </section>
+</body>
+
+</html>
