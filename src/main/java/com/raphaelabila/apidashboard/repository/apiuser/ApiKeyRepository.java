@@ -33,5 +33,4 @@ public interface ApiKeyRepository extends JpaRepository<Apikey, Long>{
     @Query(value="SELECT COUNT(u.apikeyid) FROM users.apikey u WHERE u.key=?",nativeQuery=true)
     public int findbykey(String key);
     
-    
 }

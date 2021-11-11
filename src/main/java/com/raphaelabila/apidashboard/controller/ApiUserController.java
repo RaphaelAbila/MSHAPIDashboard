@@ -4,11 +4,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.xml.bind.DatatypeConverter;
-
-import com.raphaelabila.apidashboard.entity.apiuser.Apikey;
 import com.raphaelabila.apidashboard.entity.apiuser.Apiuser;
 import com.raphaelabila.apidashboard.entity.apiuser.Userkeyview;
 import com.raphaelabila.apidashboard.repository.apiuser.ApiKeyRepository;
@@ -19,6 +14,7 @@ import com.raphaelabila.apidashboard.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,32 +49,16 @@ public class ApiUserController {
         if (available == null) {
             user.setActive(Boolean.FALSE);
             user.setSignupdate(new Date());
-            String apikey = generate(128);
             user.setStatus("Pending");
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPassword);
             repo.save(user);
-
-            Apikey keyval = new Apikey();
-            keyval.setActiive(Boolean.FALSE);
-            keyval.setKey(apikey);
-            keyval.setKeyname(user.getUsername() + "_key");
-            keyval.setStatus("Pending");
-            keyval.setApiuserid(user.getApiuserid());
-            keyrepo.save(keyval);
-
-            model.addAttribute("apikey", apikey);
             results = "successpage";
         } else {
             results = "errorpage";
         }
         return results;
-    }
-
-    public static String generate(final int keyLen) throws NoSuchAlgorithmException {
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        keyGen.init(keyLen);
-        SecretKey secretKey = keyGen.generateKey();
-        byte[] encoded = secretKey.getEncoded();
-        return DatatypeConverter.printHexBinary(encoded).toLowerCase();
     }
 
     @GetMapping("/inactiveapiusers")
@@ -143,6 +123,24 @@ public class ApiUserController {
                 List<Userkeyview> listUsers = keyviewrepo.findUserWithStatus("Pending", Boolean.FALSE);
                 model.addAttribute("listUsers", listUsers);
                 results = "pages/apiUsers/inactiveapiusers";
+                try {
+                    Apiuser usz = new Apiuser();
+
+                    String password = usz.getPassword();
+
+                    String mailTo = usz.getEmail();
+                    String subject = "API KEY ACTIVATION";
+                    EmailService mailer = (EmailService) appContextx.getBean("emailService");
+                    String Body = "I hope this emails finds you well, This is to inform you that your Account Has Been Activated with username:"
+                            + " " + usz.getUsername() + " " + "and password:" + " " + password + " "
+                            + ".Request for access key using the credentials, Thanks.";
+                    mailer.sendMail(mailTo, subject, Body);
+                    System.out.println("Successfully sent email");
+
+                } catch (Exception e) {
+                    String result2 = e + "";
+                    String log = "This Email cannot be sent due to a bad email address or poor Internet connection. Please check the email or connection and try again.";
+                }
             } else if (("active").equalsIgnoreCase(page)) {
                 List<Userkeyview> listUsers = keyviewrepo.findUserWithStatus("Approved", Boolean.TRUE);
                 model.addAttribute("listUsers", listUsers);
@@ -167,30 +165,30 @@ public class ApiUserController {
 
             ////// update record /////////////////
             keyrepo.manageKey(active, status, apikeyid, new Date(), new Date());
-            Userkeyview keyz = keyviewrepo.findbykeyid(apikeyid);
-            String email = keyz.getEmail();
-            String key = keyz.getKey();
-            
-         
+            // Userkeyview keyz = keyviewrepo.findbykeyid(apikeyid);
+            // String email = keyz.getEmail();
+            // String key = keyz.getKey();
 
             ///// Fetch page to return
             if (("inactive").equalsIgnoreCase(page)) {
                 List<Userkeyview> listKeys = keyviewrepo.findKeyWithStatus("Pending", Boolean.FALSE);
                 model.addAttribute("listKeys", listKeys);
                 results = "pages/apiKeys/inactivekeys";
-                try {
-                    // String mailTo = "timothyisaiah7@gmail.com";
-                    String mailTo = email;
-                    String subject = "API KEY ACTIVATION";
-                    EmailService mailer = (EmailService) appContextx.getBean("emailService");
-                    String Body = "I hope this emails finds you well, This is to inform you that your API Key:"+" "+ key +" "+"has been activated for usage. Thanks";
-                    mailer.sendMail(mailTo, subject, Body);
-                    System.out.println("Successfully sent email");
+                // try {
 
-                } catch (Exception e) {
-                    String result2 = e + "";
-                    String log = "This Email cannot be sent due to a bad email address or poor Internet connection. Please check the email or connection and try again.";
-                }
+                // String mailTo = email;
+                // String subject = "API KEY ACTIVATION";
+                // EmailService mailer = (EmailService) appContextx.getBean("emailService");
+                // String Body = "I hope this emails finds you well, This is to inform you that
+                // your API Key:"+" "+ key +" "+"has been activated for usage. Thanks";
+                // mailer.sendMail(mailTo, subject, Body);
+                // System.out.println("Successfully sent email");
+
+                // } catch (Exception e) {
+                // String result2 = e + "";
+                // String log = "This Email cannot be sent due to a bad email address or poor
+                // Internet connection. Please check the email or connection and try again.";
+                // }
             } else if (("active").equalsIgnoreCase(page)) {
                 List<Userkeyview> listKeys = keyviewrepo.findKeyWithStatus("Approved", Boolean.TRUE);
                 model.addAttribute("listKeys", listKeys);

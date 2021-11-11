@@ -40,7 +40,8 @@
                                     </div>
                                     <div class="modal-body">
                                         <p>1. Register API Client/User who intend to use and endpoint</p>
-                                        <p>&nbsp;(a). API key will be generated for the registered user and is accessed
+                                        <p>&nbsp;(a). API key will be generated for the registered user upon initial
+                                            Successful API request(With credentials) and is accessed
                                             in inactive key pane</p>
                                         <p>2. Activate registered client as a user</p>
                                         <p>3. Activate client API key</p>
@@ -68,15 +69,24 @@
                                     <div class="form-group">
                                         <label for="recipient-org" class="col-form-label">Organization name:
                                         </label>
-                                        <input type="text" name="password" class="form-control" required placeholder=""
+                                        <input type="text" name="organization" class="form-control" required placeholder=""
                                             style="border: 1px solid #007bff; background-color: transparent;">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="recipient-username" class="col-form-label">API Client Username:
-                                        </label>
-                                        <input type="text" name="username" class="form-control" required placeholder=""
-                                            minlength="8" maxlength="10"
-                                            style="border: 1px solid #007bff; background-color: transparent;">
+                                    <div class="form-group row">
+                                        <div class="col-md-6">
+                                            <label for="recipient-username" class="col-form-label">API Client Username:
+                                            </label>
+                                            <input type="text" name="username" class="form-control" required
+                                                placeholder="" minlength="8" maxlength="10"
+                                                style="border: 1px solid #007bff; background-color: transparent;">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="recipient-password" class="col-form-label">User Password:
+                                            </label>
+                                            <input type="text" name="password" class="form-control" required
+                                                placeholder="" 
+                                                style="border: 1px solid #007bff; background-color: transparent;">
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="recipient-email" class="col-form-label">API Client/Organization

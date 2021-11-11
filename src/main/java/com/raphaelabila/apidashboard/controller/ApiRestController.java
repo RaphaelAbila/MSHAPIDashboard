@@ -1,8 +1,12 @@
 package com.raphaelabila.apidashboard.controller;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.List;
 
+import com.raphaelabila.apidashboard.entity.apiuser.Apikey;
 import com.raphaelabila.apidashboard.entity.apiuser.Apirequestlogs;
+import com.raphaelabila.apidashboard.entity.apiuser.Apiuser;
 import com.raphaelabila.apidashboard.repository.apiuser.ApiKeyRepository;
 import com.raphaelabila.apidashboard.repository.apiuser.ApiUserRepository;
 import com.raphaelabila.apidashboard.repository.apiuser.ApirequestlogsRepository;
@@ -13,11 +17,15 @@ import com.raphaelabila.apidashboard.repository.apiuser.UserkeyviewRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
 
 @Controller
 @RequestMapping("/test")
@@ -32,6 +40,70 @@ public class ApiRestController {
     ApiKeyRepository keyzz;
     @Autowired
     ApiUserRepository user;
+
+    //////////////////// GENERATE ACCESS KEYS///////////////////////////
+    @RequestMapping(value = "/generateaccesskey", method = RequestMethod.GET, consumes = "application/json")
+    public @ResponseBody RestResponse generateaccesskey(@RequestBody String json) throws NoSuchAlgorithmException {
+        RestResponse response = new RestResponse();
+        String Endpoint = "Generate Access Key";
+        String password = "";
+        String username = "";
+        String results = "";
+
+        JSONObject jsonObject = new JSONObject(json);
+        JSONArray jsonArrayRequired = jsonObject.getJSONArray("required");
+        if (jsonArrayRequired.length() == 1) {
+            password = jsonArrayRequired.getJSONObject(0).getString("password");
+            username = jsonArrayRequired.getJSONObject(0).getString("username");
+
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String encodedPassword = passwordEncoder.encode(password);
+
+            Apiuser founduser = user.getUserBypassword(encodedPassword, username);
+            Apiuser usz = new Apiuser();
+            if (founduser != null) {
+
+                Apikey appkey = keyzz.findBykeyname(username+"_key");
+                if(appkey != null){
+                    Apikey kyz = new Apikey();
+                    results = "Generated Access Key Successfully";
+                    response.setData(kyz.getKey());
+                    response.setReturnCode("00");
+                    response.setReturnMessage("SUCCESS");
+                    logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
+                }else{
+                    String apikey = generate(128);
+                    Apikey keyval = new Apikey();
+                    keyval.setActiive(Boolean.FALSE);
+                    keyval.setKey(apikey);
+                    keyval.setKeyname(username + "_key");
+                    keyval.setStatus("Pending");
+                    keyval.setApiuserid(usz.getApiuserid());
+                    keyzz.save(keyval);
+    
+                    results = "Generated Access Key Successfully";
+                    response.setData(apikey);
+                    response.setReturnCode("00");
+                    response.setReturnMessage("SUCCESS");
+                    logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
+                }
+               
+            } else {
+                results = "Invalid User Credentials";
+                response.setData(results);
+                response.setReturnCode("01");
+                response.setReturnMessage("FAILURE");
+                logAPIRequest(results, username, username + "_key", Endpoint, Boolean.FALSE);
+            }
+        }else {
+            results = "Improper Request Body Or Empty parameters";
+            response.setData(results);
+            response.setReturnCode("01");
+            response.setReturnMessage("FAILURE");
+            logAPIRequest(results, username, username + "_key", Endpoint, Boolean.FALSE);
+        }
+        return response;
+    }
 
     //////////////////// TEST TWO END POINT////////////////////////////
     @RequestMapping(value = "/tests", method = RequestMethod.GET, consumes = "application/json")
@@ -113,6 +185,9 @@ public class ApiRestController {
         return response;
     }
 
+    ////////////////////////// METHODS BEGIN HERE
+    ////////////////////////// //////////////////////////////////////////
+
     public String logAPIRequest(String reasons, String username, String key, String endpoint, Boolean status) {
         String results = "";
         try {
@@ -129,5 +204,13 @@ public class ApiRestController {
             results = "failed";
         }
         return results;
+    }
+
+    public static String generate(final int keyLen) throws NoSuchAlgorithmException {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(keyLen);
+        SecretKey secretKey = keyGen.generateKey();
+        byte[] encoded = secretKey.getEncoded();
+        return DatatypeConverter.printHexBinary(encoded).toLowerCase();
     }
 }

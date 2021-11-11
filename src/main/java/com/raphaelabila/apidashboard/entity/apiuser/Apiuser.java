@@ -33,6 +33,8 @@ public class Apiuser {
     private String notes;
     @Column(name = "status",length=2147483647)
     private String status;
+    @Column(name = "organization",length=2147483647)
+    private String organization;
 
     public Long getApiuserid() {
         return apiuserid;
@@ -111,5 +113,11 @@ public class Apiuser {
     }
     public void setStatus(String status) {
         this.status = status;
+    }
+    public String getOrganization() {
+        return organization;
+    }
+    public void setOrganization(String organization) {
+        this.organization = organization;
     }
 }

@@ -21,7 +21,7 @@ public interface ApiUserRepository extends JpaRepository<Apiuser, Long> {
     @Transactional
     @Modifying
     @Query(value = "UPDATE users.apiuser   SET active=?1 ,status=?2, activatedon=?4,deactivatedon=?5 WHERE apiuserid =?3", nativeQuery = true)
-    public int manageUser(Boolean active, String status, Long userid , Date activatedon,Date deactivatedon);
+    public int manageUser(Boolean active, String status, Long userid, Date activatedon, Date deactivatedon);
 
     @Transactional
     @Query(value = "SELECT COUNT(apiuserid) FROM users.apiuser WHERE status=?1 AND active=?2", nativeQuery = true)
@@ -29,6 +29,7 @@ public interface ApiUserRepository extends JpaRepository<Apiuser, Long> {
 
     @Query(value = "SELECT COUNT(apiuserid) FROM users.apiuser WHERE username=?1", nativeQuery = true)
     public int checkvaliduser(String username);
-    
 
+    @Query(value = "SELECT * FROM users.apiuser u WHERE u.password=?1 AND u.username=?2", nativeQuery = true)
+    public Apiuser getUserBypassword(String password, String username);
 }
