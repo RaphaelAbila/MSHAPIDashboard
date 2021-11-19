@@ -18,6 +18,7 @@ import com.raphaelabila.apidashboard.entity.apiuser.Apirequestlogs;
 import com.raphaelabila.apidashboard.entity.apiuser.Apiuserendpoints;
 import com.raphaelabila.apidashboard.entity.apiuser.Endpoint;
 import com.raphaelabila.apidashboard.entity.apiuser.Endpointuser;
+import com.raphaelabila.apidashboard.entity.apiuser.Endpointusercounts;
 import com.raphaelabila.apidashboard.entity.apiuser.Userkeyview;
 import com.raphaelabila.apidashboard.repository.apiuser.ApiKeyRepository;
 import com.raphaelabila.apidashboard.repository.apiuser.ApiUserRepository;
@@ -25,6 +26,7 @@ import com.raphaelabila.apidashboard.repository.apiuser.ApirequestlogsRepository
 import com.raphaelabila.apidashboard.repository.apiuser.ApiuserendpointsRepository;
 import com.raphaelabila.apidashboard.repository.apiuser.EndpointRepository;
 import com.raphaelabila.apidashboard.repository.apiuser.EndpointuserRepository;
+import com.raphaelabila.apidashboard.repository.apiuser.EndpointusercountsRepository;
 import com.raphaelabila.apidashboard.repository.apiuser.UserkeyviewRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,8 @@ public class DashboardController {
     ApiuserendpointsRepository enduserviewrepo;
     @Autowired
     ApirequestlogsRepository log;
+    @Autowired
+    EndpointusercountsRepository endrepocount;
 
     @GetMapping(value = "dashboard")
     public ModelMap mmDashboard() {
@@ -77,10 +81,10 @@ public class DashboardController {
 
         Double successlogs = log.countlogs(Boolean.TRUE);
         Double failedlogs = log.countlogs(Boolean.FALSE);
-        Double totalLogs = successlogs+failedlogs;
+        Double totalLogs = successlogs + failedlogs;
         model.addAttribute("apirequests", Math.round(totalLogs));
-        model.addAttribute("successlogs", Math.round(((successlogs/totalLogs)*100)*100.0)/100.0);
-        model.addAttribute("failedlogs",  Math.round(((failedlogs/totalLogs)*100)*100.0)/100.0);
+        model.addAttribute("successlogs", Math.round(((successlogs / totalLogs) * 100) * 100.0) / 100.0);
+        model.addAttribute("failedlogs", Math.round(((failedlogs / totalLogs) * 100) * 100.0) / 100.0);
 
         Double activeusers = repo.countactiveusers("Approved", Boolean.TRUE);
         Double inactive = userz - activeusers;
@@ -99,7 +103,8 @@ public class DashboardController {
 
     @GetMapping("/endpointhome")
     public String endpointsHome(Model model) {
-        List<Endpoint> endpoints = endrepo.findAll();
+
+        List<Endpointusercounts> endpoints = endrepocount.findAll();
         model.addAttribute("endpoints", endpoints);
 
         List<Userkeyview> userendpoints = keyviewrepo.fetchactiveuserkey(Boolean.TRUE, "Approved");
@@ -133,7 +138,6 @@ public class DashboardController {
     public String registerclient(Model model) {
         return "pages/others/systemusers/registerclient";
     }
-    
 
     @GetMapping("/showUpdateForm")
     public ModelAndView showUpdateForm(@RequestParam Long endpointId) {
@@ -146,7 +150,7 @@ public class DashboardController {
     @GetMapping("/deleteendpoint")
     public String deleteEmployee(@RequestParam Long endpointid, Model model) {
         endrepo.deleteById(endpointid);
-        List<Endpoint> endpoints = endrepo.findAll();
+        List<Endpointusercounts> endpoints = endrepocount.findAll();
         model.addAttribute("endpoints", endpoints);
         return "pages/others/endpoints/endpointhome";
     }
@@ -156,7 +160,7 @@ public class DashboardController {
 
         endrepo.updateendpoint(end.getEndpointid(), end.getName(), end.getDetails(), end.getUrl());
 
-        List<Endpoint> endpoints = endrepo.findAll();
+        List<Endpointusercounts> endpoints = endrepocount.findAll();
         model.addAttribute("endpoints", endpoints);
 
         List<Userkeyview> userendpoints = keyviewrepo.fetchactiveuserkey(Boolean.TRUE, "Approved");
@@ -167,8 +171,18 @@ public class DashboardController {
 
     @GetMapping("/getendpoints")
     public @ResponseBody List<Endpoint> getendpoints(@RequestParam Long apiuserid) {
+        List<Endpoint> userendz = new ArrayList<>();
+
         List<Endpoint> endpoints = endrepo.findAll();
-        return endpoints;
+
+        for (Endpoint ends : endpoints) {
+            Long endpointid = ends.getEndpointid();
+            int counter = enduserrepo.countAvailable(endpointid,apiuserid);
+            if(counter == 0 ){
+                userendz.add(ends);
+            }
+        }
+        return userendz;
     }
 
     @GetMapping("/submitendpoints")

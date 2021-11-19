@@ -72,13 +72,15 @@ public class ApiRestController {
             password = jsonArrayRequired.getJSONObject(0).getString("password");
             username = jsonArrayRequired.getJSONObject(0).getString("username");
 
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String encodedPassword = passwordEncoder.encode(password);
+            // BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            // String encodedPassword = passwordEncoder.encode(password);
+            
             // Boolean tester = passwordEncoder.matches(password, encodedPassword);
-
-            Apiuser founduser = user.getUserBypassword(encodedPassword, username);
+            
+            Apiuser founduser = user.findByUsername(username);
             Apiuser usz = new Apiuser();
             if (founduser != null) {
+                
                 //////////////// check if user had generated api key before/////////
                 Apikey appkey = keyzz.findBykeyname(username + "_key");
                 if (appkey != null) {
