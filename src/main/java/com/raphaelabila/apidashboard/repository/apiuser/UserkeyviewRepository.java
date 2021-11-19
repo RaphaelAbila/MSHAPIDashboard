@@ -31,4 +31,7 @@ public interface UserkeyviewRepository extends JpaRepository<Userkeyview, Long>{
 
     @Query(value = "SELECT COUNT(u.apiuserid) FROM users.userkeyview u WHERE  u.active=?1  AND u.status=?2  AND u.username=?3", nativeQuery = true)
     public int checkactiveuser(Boolean active, String status,String username);
+
+    @Query(value="SELECT * FROM users.userkeyview u WHERE u.key=?1",nativeQuery=true)
+    public Userkeyview fetchuserbykey( String key);
 }

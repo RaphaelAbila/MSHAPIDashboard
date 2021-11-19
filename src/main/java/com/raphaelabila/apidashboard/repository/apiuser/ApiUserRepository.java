@@ -26,10 +26,10 @@ public interface ApiUserRepository extends JpaRepository<Apiuser, Long> {
     @Transactional
     @Query(value = "SELECT COUNT(apiuserid) FROM users.apiuser WHERE status=?1 AND active=?2", nativeQuery = true)
     public Double countactiveusers(String status, Boolean active);
-
+   
     @Query(value = "SELECT COUNT(apiuserid) FROM users.apiuser WHERE username=?1", nativeQuery = true)
     public int checkvaliduser(String username);
 
-    @Query(value = "SELECT * FROM users.apiuser u WHERE u.password=?1 AND u.username=?2", nativeQuery = true)
+    @Query(value = "SELECT * FROM users.apiuser u WHERE u.password=? AND u.username=?", nativeQuery = true)
     public Apiuser getUserBypassword(String password, String username);
 }
