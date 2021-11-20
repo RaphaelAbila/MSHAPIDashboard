@@ -6,9 +6,9 @@
     <title>Home</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css" />
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous" /> -->
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous"/>
 
-    <!-- <link href="webjars/bootstrap/4.6.0/css/bootstrap.min.css"rel="stylesheet"> -->
+     <link href="webjars/bootstrap/4.6.0/css/bootstrap.min.css"rel="stylesheet">  -->
 
 </head>
 
@@ -17,7 +17,7 @@
 
         <div class="row">
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
-                <div class="card card-statistics" style="border: #e65251  solid 1px;">
+                <div class="card card-statistics" style="border: #e65251  solid 1px; border-radius: 10px;">
                     <div class="card-body">
                         <div class="clearfix">
                             <div class="float-left">
@@ -37,7 +37,7 @@
                 </div>
             </div>
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
-                <div class="card card-statistics" style="border: #17a2b8  solid 1px;">
+                <div class="card card-statistics" style="border: #17a2b8  solid 1px; border-radius: 10px;">
                     <div class="card-body">
                         <div class="clearfix">
                             <div class="float-left">
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
-                <div class="card card-statistics" style="border: #00ce68 solid 1px;">
+                <div class="card card-statistics" style="border: #00ce68 solid 1px; border-radius: 10px;">
                     <div class="card-body">
                         <div class="clearfix">
                             <div class="float-left">
@@ -78,7 +78,7 @@
                 </div>
             </div>
             <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 grid-margin stretch-card">
-                <div class="card card-statistics" style="border: #ffaf00  solid 1px;">
+                <div class="card card-statistics" style="border: #ffaf00  solid 1px; border-radius: 10px;">
                     <div class="card-body">
                         <div class="clearfix">
                             <div class="float-left">
@@ -102,7 +102,7 @@
             <div class="col-lg-7 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="card-title text-primary mb-5">Weekly Request Statistics</h2>
+                        <h2 class="card-title text-primary mb-5">Yearly API Request Statistics - [[${year}]]</h2>
                         <div id="chart-logs"></div>
                     </div>
                     <div class="card-body p-0">
@@ -209,31 +209,51 @@
             </div>
         </div>
         <!-- webjars -->
-        <script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
+        <!-- <script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script> -->
         <!-- cdn -->
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
         <script>
             $(document).ready(function () {
+                debugger
                 $('#chart-logs-legend').html('');
                 $("#chart-logs").empty();
 
-                var plot1 = "[(${plot1})]";
-                var plot2 = "[(${plot2})]";
-
+                var data = JSON.parse('[(${plotValues})]');
                 var jsonData = [];
-                jsonData.push({ 'unit': 'Wed', 'success': plot1, 'failed': plot2 });
-                Morris.Bar({
+                for (var i = 0; i < data.length; i++) {
+                    jsonData.push({ 'month': data[i].month, 'success': parseInt(data[i].successfull), 'failed': parseInt(data[i].failed) });
+                }
+
+                // Morris.Bar({
+                //     element: 'chart-logs',
+                //     data: jsonData,
+                //     xkey: 'month',
+                //     ykeys: ['success', 'failed'],
+                //     labels: ['Successful', 'Unsuccessful'],
+                //     barColors: ["#2980B9", "#dc3644"],
+                //     hideHover: 'auto',
+                //     resize: true,
+                //     ymin: 0,
+                //     barSize: 40,
+                //     xLabelAngle: '70'
+                // });
+                new Morris.Area({
                     element: 'chart-logs',
                     data: jsonData,
-                    xkey: 'unit',
+                    xkey: 'month',
+                    parseTime: false,
+                    fillOpacity: 0.4,
+                    behaveLikeLine: !0,
+                    // smooth: !1,
+                    pointFillColors: ['#ffffff'],
                     ykeys: ['success', 'failed'],
+                    pointStrokeColors: ['black'],
                     labels: ['Successful', 'Unsuccessful'],
-                    barColors: ["#2980B9", "#dc3644"],
+                    lineColors: ["#2980B9", "#dc3644"],
                     hideHover: 'auto',
-                    resize: true,
-                    ymin: 0,
-                    barSize: 40
+                    resize: true
+                    // xLabelAngle: '70'
                 });
                 drawgridLabel();
 

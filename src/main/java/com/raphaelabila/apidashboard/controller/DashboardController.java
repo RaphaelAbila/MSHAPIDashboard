@@ -2,6 +2,9 @@ package com.raphaelabila.apidashboard.controller;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -60,13 +63,23 @@ public class DashboardController {
     @Autowired
     EndpointusercountsRepository endrepocount;
 
+    public SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+    public SimpleDateFormat formatterwithtime2 = new SimpleDateFormat("dd-MM-yyyy hh:mm aa");
+    public SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+    private Date serverDate = new Date();
+
     @GetMapping(value = "dashboard")
     public ModelMap mmDashboard() {
         return new ModelMap();
     }
 
     @GetMapping("/dashbordhome")
-    public String deactivatedusers(Model model) {
+    public String deactivatedusers(Model model) throws JsonProcessingException, ParseException {
+        List<Map> plotValues = new ArrayList<>();
+        final String[] months = {"", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        final String[] endofmonths = {"", "31", "28", "31", "30", "31", "30", "31", "31", "30", "31", "30", "31"};
+        
+
         List<Userkeyview> listUsers = keyviewrepo.findAll();
         int userz = listUsers.size();
 
@@ -93,11 +106,34 @@ public class DashboardController {
         model.addAttribute("approvedclients", Math.round(approvedclients * 100.0) / 100.0);
         model.addAttribute("unapprovedclients", Math.round(unapprovedclients * 100.0) / 100.0);
 
-        model.addAttribute("plot1", Math.round(successlogs));
-        model.addAttribute("plot2", Math.round(failedlogs));
+         /////////////////////FETCH STATISTICS TO PLOT FOR THE YEAR /////////////////////
+         String serverdate = fmt.format(serverDate);
+         LocalDate localDate = LocalDate.parse(serverdate);
+         int currentyear = localDate.getYear();
+         model.addAttribute("year", currentyear);
+         int currentmonth = localDate.getMonthValue();
+         for (int month = 1; month <= currentmonth; month++) {
+             long failed = 0, successfull = 0;
+             Map<String, Object> requestRates = new HashMap<>();
+             String StartDate = "01-" + month + "-" + currentyear;
+             String EndDate = endofmonths[month] + "-" + month + "-" + currentyear;
+             Date startDate = formatter.parse(StartDate);
+             Date endDate = formatter.parse(EndDate);
+ 
+             ///////////////Month///////////////////////
+             requestRates.put("month", months[month]);
+             //////COUNT SUCCESSFUL LOGS ///////////////
+             successfull = log.countlogstatistics(Boolean.TRUE, startDate, endDate);
+             requestRates.put("successfull", successfull);
+             
+             //////COUNT FAILED LOGS ///////////////
+             failed = log.countlogstatistics(Boolean.FALSE, startDate, endDate);
+             requestRates.put("failed", failed);
+ 
+             plotValues.add(requestRates);
+         }
+         model.addAttribute("plotValues", new ObjectMapper().writeValueAsString(plotValues));
 
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        model.addAttribute("year", year);
         return "pages/dashboard";
     }
 

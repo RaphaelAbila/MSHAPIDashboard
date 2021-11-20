@@ -72,43 +72,48 @@ public class ApiRestController {
             password = jsonArrayRequired.getJSONObject(0).getString("password");
             username = jsonArrayRequired.getJSONObject(0).getString("username");
 
-            // BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            // String encodedPassword = passwordEncoder.encode(password);
-            
-            // Boolean tester = passwordEncoder.matches(password, encodedPassword);
-            
             Apiuser founduser = user.findByUsername(username);
-            Apiuser usz = new Apiuser();
+            // Apiuser usz = new Apiuser();
             if (founduser != null) {
-                
-                //////////////// check if user had generated api key before/////////
-                Apikey appkey = keyzz.findBykeyname(username + "_key");
-                if (appkey != null) {
-                    Apikey kyz = new Apikey();
-                    results = "Generated API Key Successfully";
-                    response.setData(kyz.getKey());
-                    response.setReturnCode("00");
-                    response.setReturnMessage("SUCCESS");
-                    logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
-                } else {
-                    String apikey = generate(128);
-                    Apikey keyval = new Apikey();
-                    keyval.setActiive(Boolean.FALSE);
-                    keyval.setKey(apikey);
-                    keyval.setKeyname(username + "_key");
-                    keyval.setStatus("Pending");
-                    keyval.setApiuserid(usz.getApiuserid());
-                    keyzz.save(keyval);
+                // Compare user passwords//////////////////////////////
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                Boolean passwordstatus = passwordEncoder.matches(password, founduser.getPassword());
+                if (passwordstatus == true) {
+                    //////////////// check if user had generated api key before/////////
+                    Apikey appkey = keyzz.findBykeyname(username + "_key");
+                    if (appkey != null) {
+                        Apikey kyz = new Apikey();
+                        results = "Generated API Key Successfully";
+                        response.setData(kyz.getKey());
+                        response.setReturnCode("00");
+                        response.setReturnMessage("SUCCESS");
+                        logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
+                    } else {
+                        String apikey = generate(128);
+                        Apikey keyval = new Apikey();
+                        keyval.setActiive(Boolean.FALSE);
+                        keyval.setKey(apikey);
+                        keyval.setKeyname(username + "_key");
+                        keyval.setStatus("Pending");
+                        keyval.setApiuserid(founduser.getApiuserid());
+                        keyzz.save(keyval);
 
-                    results = "Generated Access Key Successfully";
-                    response.setData(apikey);
-                    response.setReturnCode("00");
-                    response.setReturnMessage("SUCCESS");
-                    logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
+                        results = "Generated Access Key Successfully";
+                        response.setData(apikey);
+                        response.setReturnCode("00");
+                        response.setReturnMessage("SUCCESS");
+                        logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
+                    }
+                } else {
+                    results = "Invalid user password";
+                    response.setData(results);
+                    response.setReturnCode("01");
+                    response.setReturnMessage("FAILURE");
+                    logAPIRequest(results, username, username + "_key", Endpoint, Boolean.FALSE);
                 }
 
             } else {
-                results = "Invalid User Credentials";
+                results = "Invalid username";
                 response.setData(results);
                 response.setReturnCode("01");
                 response.setReturnMessage("FAILURE");
@@ -153,7 +158,7 @@ public class ApiRestController {
                             String token = createJWT(key, username, 600000);
 
                             results = "Generated Access Token Successfully";
-                            response.setData("Bearer:" +" "+ token);
+                            response.setData("Bearer:" + " " + token);
                             response.setReturnCode("00");
                             response.setReturnMessage("SUCCESS");
                             logAPIRequest(results, username, username + "_key", Endpoint, Boolean.TRUE);
@@ -234,8 +239,8 @@ public class ApiRestController {
 
                                     String uri = "https://stoplight.io/mocks/sscs-activity/ubts-api/26109322/users/142";
                                     RestTemplate restTemplate = new RestTemplate();
-                                    results = restTemplate.getForObject(uri,String.class);
-                                    
+                                    results = restTemplate.getForObject(uri, String.class);
+
                                     response.setData(results);
                                     response.setReturnCode("00");
                                     response.setReturnMessage("SUCCESS");
