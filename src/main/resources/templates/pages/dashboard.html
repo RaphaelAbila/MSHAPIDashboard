@@ -104,6 +104,7 @@
                     <div class="card-body">
                         <h2 class="card-title text-primary mb-5">Yearly API Request Statistics - [[${year}]]</h2>
                         <div id="chart-logs"></div>
+                        <!-- <canvas id="chart-logs1"></canvas> -->
                     </div>
                     <div class="card-body p-0">
                         <div id="chart-logs-legend" class="chart-legend"></div>
@@ -221,8 +222,14 @@
 
                 var data = JSON.parse('[(${plotValues})]');
                 var jsonData = [];
+                // var arraymonths=[];
+                // var arraysuccess=[];
+                // var arrayfailed=[];
                 for (var i = 0; i < data.length; i++) {
-                    jsonData.push({ 'month': data[i].month, 'success': parseInt(data[i].successfull), 'failed': parseInt(data[i].failed) });
+                jsonData.push({ 'month': data[i].month, 'success': parseInt(data[i].successfull), 'failed': parseInt(data[i].failed) });
+                // arraymonths.push(data[i].month);
+                // arraysuccess.push(data[i].successfull);
+                // arrayfailed.push(data[i].failed);
                 }
 
                 // Morris.Bar({
@@ -255,6 +262,63 @@
                     resize: true
                     // xLabelAngle: '70'
                 });
+
+                // var lineChartCanvas = $("#chart-logs1").get(0).getContext("2d");
+                // var data = {
+                //     labels: arraymonths,
+                //     datasets: [{
+                //         label: 'Successful',
+                //         data: arraysuccess,
+                //         backgroundColor: 'rgb(22, 150, 242,0.4)',
+                //         borderWidth: 1,
+                //         fill: true
+                //     },
+                //     {
+                //         label: 'Unsuccessful',
+                //         data: arrayfailed,
+                //         backgroundColor: 'rgb(242, 22, 22,0.4)',
+                //         borderWidth: 1,
+                //         fill: true
+                //     }
+                //     ]
+                // };
+                // var options = {
+                //     responsive: true,
+                //     maintainAspectRatio: true,
+                //     scales: {
+                //         yAxes: [{
+                //             display: true
+                //         }],
+                //         xAxes: [{
+                //             display: true,
+                //             ticks: {
+                //                 beginAtZero: true
+                //             }
+                //         }]
+                //     },
+                //     legend: {
+                //         display: true
+                //     },
+                //     elements: {
+                //         point: {
+                //             radius: 3
+                //         }
+                //     },
+                //     layout: {
+                //         padding: {
+                //             left: 0,
+                //             right: 0,
+                //             top: 0,
+                //             bottom: 0
+                //         }
+                //     },
+                //     stepsize: 1
+                // };
+                // var lineChart = new Chart(lineChartCanvas, {
+                //     type: 'line',
+                //     data: data,
+                //     options: options
+                // });
                 drawgridLabel();
 
                 $("#apiUsersTable").DataTable({

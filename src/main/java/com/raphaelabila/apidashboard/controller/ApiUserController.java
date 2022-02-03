@@ -124,7 +124,7 @@ public class ApiUserController {
                 model.addAttribute("listUsers", listUsers);
                 results = "pages/apiUsers/inactiveapiusers";
                 try {
-                    Apiuser usz = new Apiuser();
+                    Apiuser usz = repo.getById(apiuserid);
 
                     String password = usz.getPassword();
 
